@@ -5,9 +5,7 @@
 A SOAR-lite alert triage service: ingest a security alert (a suspicious IP,
 a file hash, a login event), enrich it against threat-intel sources, classify
 its severity with deterministic rules, and return a playbook of suggested
-response actions. Pairs with [Meerkat](https://github.com/JOGURNAUT/meerkat),
-which applies the same evidence-based, deterministic-classification
-philosophy to log-based intrusion detection instead of live alert enrichment.
+response actions.
 
 ## Why it's built this way
 
