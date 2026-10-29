@@ -1,9 +1,13 @@
+[![CI](https://github.com/JOGURNAUT/mongoose/actions/workflows/ci.yml/badge.svg)](https://github.com/JOGURNAUT/mongoose/actions/workflows/ci.yml)
+
 # Mongoose
 
 A SOAR-lite alert triage service: ingest a security alert (a suspicious IP,
 a file hash, a login event), enrich it against threat-intel sources, classify
 its severity with deterministic rules, and return a playbook of suggested
-response actions.
+response actions. Pairs with [Meerkat](https://github.com/JOGURNAUT/meerkat),
+which applies the same evidence-based, deterministic-classification
+philosophy to log-based intrusion detection instead of live alert enrichment.
 
 ## Why it's built this way
 
@@ -75,6 +79,36 @@ A real run against the mock backend (see [Why it's built this way](#why-its-buil
   ]
 }
 ```
+
+## Severity distribution on a real-scale batch, not just one example
+
+A single curl example proves the pipeline runs; it doesn't prove the
+thresholds produce a sane spread instead of collapsing everything into
+one bucket. `scripts/eval_distribution.py` runs classification over
+2,000 mock-enriched indicators each and reports the breakdown:
+
+```bash
+PYTHONPATH=. python scripts/eval_distribution.py
+```
+
+```
+IP classification over 2000 mock indicators:
+  HIGH       512  (25.6%)
+  MEDIUM     982  (49.1%)
+  LOW        506  (25.3%)
+  UNKNOWN      0  (0.0%)
+
+File-hash classification over 2000 mock indicators:
+  HIGH      1239  (62.0%)
+  MEDIUM     425  (21.2%)
+  LOW         93  (4.7%)
+  UNKNOWN    243  (12.2%)
+```
+
+IP severity never lands `UNKNOWN` because the mock always returns a real
+confidence score (0-100); file-hash severity does, by design — about 1
+in 8 mock hashes simulate a file no scan engine has seen before, which
+is exactly the fail-closed path this tool exists to handle correctly.
 
 ## Tests
 
