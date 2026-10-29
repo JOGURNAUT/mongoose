@@ -146,7 +146,19 @@ flowchart LR
 
     J --> L[("stored in SQLite\n+ returned to caller")]
     K --> L
+
+    classDef lookup fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
+    classDef deterministic fill:#dcfce7,stroke:#16a34a,color:#14532d
+    classDef decision fill:#fef3c7,stroke:#d97706,color:#78350f
+    classDef failclosed fill:#fee2e2,stroke:#dc2626,color:#7f1d1d
+
+    class C,D lookup
+    class E,F,G,H,J deterministic
+    class B,I decision
+    class K failclosed
 ```
+
+**Legend:** blue = external/mock lookup &nbsp;·&nbsp; green = deterministic logic (no LLM) &nbsp;·&nbsp; orange = branch point &nbsp;·&nbsp; red = fail-closed path
 
 ```
 app/
