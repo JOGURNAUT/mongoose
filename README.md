@@ -126,6 +126,28 @@ and not just through a direct unit-test call, and the full HTTP surface
 
 ## Architecture
 
+```mermaid
+flowchart LR
+    A["POST /alerts"] --> B{"alert type"}
+    B -->|ip_traffic| C["enrichment.check_ip\n(AbuseIPDB or mock)"]
+    B -->|file_hash| D["enrichment.check_file_hash\n(VirusTotal or mock)"]
+    B -->|login| E["no enrichment needed"]
+
+    C --> F["classify_ip"]
+    D --> G["classify_file_hash"]
+    E --> H["classify_login"]
+
+    F --> I{"severity"}
+    G --> I
+    H --> I
+
+    I -->|HIGH / MEDIUM / LOW| J["build_playbook"]
+    I -->|UNKNOWN\nenrichment failed or\nnever-seen indicator| K["FAIL CLOSED\nroute to manual review"]
+
+    J --> L[("stored in SQLite\n+ returned to caller")]
+    K --> L
+```
+
 ```
 app/
   main.py        FastAPI routes: POST /alerts, GET /alerts, GET /alerts/{id}, GET /health
