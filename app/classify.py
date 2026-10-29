@@ -12,12 +12,23 @@ alert was scored the way it was, not just the final label.
 
 from app.models import AlertIn, AlertType, ClassificationResult, EnrichmentResult, Severity
 
+# AbuseIPDB's own documentation treats a confidence score above 75 as a
+# clear abuse signal and recommends blocking; 25 is their suggested floor
+# for "worth a closer look" rather than outright blocking.
 IP_HIGH_THRESHOLD = 75
 IP_MEDIUM_THRESHOLD = 25
 
+# VirusTotal community convention: >=30% engine detection is treated as
+# high-confidence malicious; single-digit detections are common noise
+# from engines with aggressive heuristics, so 5% is the floor worth a
+# second look rather than an auto-dismiss.
 HASH_HIGH_RATIO = 0.30
 HASH_MEDIUM_RATIO = 0.05
 
+# Same brute-force/impossible-travel thresholds as Meerkat's log-based
+# rules (fail2ban-style 5-attempt default, no realistic-travel-time
+# window under 60 min) — kept identical on purpose so the two tools
+# agree on what "suspicious" means for the same underlying behavior.
 BRUTE_FORCE_ATTEMPTS = 5
 IMPOSSIBLE_TRAVEL_MINUTES = 60
 
